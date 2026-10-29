@@ -1,0 +1,9 @@
+# Direct runtime versions used for the first verified macOS release.
+# Bleak is installed only on Linux; Raspberry Pi radio validation is pending.
+bleak==3.0.2
+fastapi==0.162.0
+httpx==0.28.1
+mcp==1.30.0
+pydantic==2.14.1
+starlette==1.10.0
+uvicorn==0.54.0
