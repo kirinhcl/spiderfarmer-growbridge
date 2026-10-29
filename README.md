@@ -1,33 +1,33 @@
 # Spider Farmer GrowBridge
 
-简体中文 | [English](README.en.md)
+English | [简体中文](README.zh-CN.md)
 
-通过本地蓝牙连接 Spider Farmer GGS 控制器，为 LLM 提供环境监测、历史查询、插座、灯和风机控制，以及定时水泵工具。
+Connect to Spider Farmer GGS controllers over local Bluetooth and give LLMs tools for environmental monitoring, historical data, outlet switching, light and fan control, and timed pump operation.
 
-这是独立开发的早期版本，与 Spider Farmer 官方无关联。当前已经在 **macOS + AC5（广播名称 SF-GGS-PS5、固件 3.2、明文协议 v1）** 上验证协议读取、插座开关、调光和调速。Linux/树莓派后端和部署入口已提供；树莓派蓝牙实机验证尚未完成。加密 v2 固件会被识别并拒绝控制。
+This is an independent, early-stage project with no affiliation with Spider Farmer. Protocol reads, outlet switching, dimming, and speed control have been verified on **macOS with an AC5 advertising as SF-GGS-PS5, firmware 3.2, using plaintext protocol v1**. A Linux/Raspberry Pi backend and installation scripts are included; Bluetooth operation on a physical Raspberry Pi has not yet been verified. Encrypted v2 firmware is detected and control is rejected.
 
-## 工作方式
+## How it works
 
 ```text
 LLM / Codex
-   │ MCP stdio（本机或经 SSH）
+   │ MCP stdio (local or over SSH)
    ▼
-GrowBridge MCP 客户端
-   │ 带认证的本机 HTTP
+GrowBridge MCP client
+   │ Authenticated local HTTP
    ▼
-GrowBridge 常驻服务 ─── SQLite 历史与操作记录
-   │ 单一蓝牙连接
+GrowBridge daemon ─── SQLite history and operation records
+   │ Single Bluetooth connection
    ▼
 Spider Farmer AC5 / GGS
 ```
 
-MCP 进程不直接占用蓝牙。常驻服务集中执行命令、校验回读，并维护历史。默认 API 仅监听 `127.0.0.1:8766`；每次安装生成独立访问令牌，客户端从私有配置读取，不把令牌写进 MCP 配置。
+The daemon owns the Bluetooth connection, executes commands, verifies device readback, and records history. MCP clients access it through the local API, which listens only on `127.0.0.1:8766` by default. Each installation generates a separate access token. Clients read the token from private configuration, so it stays out of MCP configuration files.
 
-第一版支持按需控制和持续采集，不包含无人值守环境优化、自动灌溉计划、MQTT、云端模型或网页面板。
+The first release supports on-demand control and continuous data collection. Unattended environmental optimization, irrigation schedules, MQTT, cloud models, and a web dashboard are outside its current scope.
 
-## 安装
+## Installation
 
-需要 Python 3.11+。Mac 还需要 Xcode 命令行工具；Linux 需要 BlueZ 和系统 D-Bus。
+Requires Python 3.11+. macOS also requires Xcode Command Line Tools; Linux requires BlueZ and the system D-Bus.
 
 ```sh
 git clone https://github.com/kirinhcl/spiderfarmer-growbridge.git
@@ -37,35 +37,35 @@ python3 -m venv .venv
 .venv/bin/growbridge scan
 ```
 
-Mac 首次使用会编译并启动 `GrowBridge BLE` 原生辅助程序，请允许它使用蓝牙。扫描结果包含这台机器可用的设备地址。把扫描得到的地址填入下面命令：
+On first use, macOS compiles and launches the native `GrowBridge BLE` helper. Allow it to use Bluetooth when prompted. The scan lists device addresses usable on that machine. Use the scanned address in the following command:
 
 ```sh
 .venv/bin/growbridge init --device YOUR_SCANNED_ADDRESS
 .venv/bin/growbridge serve
 ```
 
-另开一个终端查看状态：
+Open another terminal to check the current state:
 
 ```sh
 .venv/bin/growbridge status
 ```
 
-默认只读。确认接线后，在私有配置 `~/.config/spiderfarmer-growbridge/config.toml` 中设置 `controls_enabled = true` 并重启服务。首次初始化时，也可以显式传入 `init --device YOUR_SCANNED_ADDRESS --enable-controls`。
+Control is disabled by default. After checking your wiring, set `controls_enabled = true` in the private configuration at `~/.config/spiderfarmer-growbridge/config.toml`, then restart the service. You can also enable control explicitly during initial setup with `init --device YOUR_SCANNED_ADDRESS --enable-controls`.
 
-配置默认映射如下，其他接线必须先改配置：
+The default outlet mapping is shown below. Update the configuration first if your wiring differs.
 
-| 设备 | 插座 | 控制范围 |
+| Device | Outlet | Control range |
 | --- | --- | --- |
-| 灯 | 1 | 亮度 0–100%；0 为关闭 |
-| 排风扇 | 2 | 速度 0–100%；0 为关闭 |
-| 循环风扇 | 3 | 0–10 档；0 为关闭 |
-| 水泵 | 4 | 有限时长脉冲；默认上限 5 秒、间隔 60 秒 |
+| Grow light | 1 | Brightness 0–100%; 0 turns it off |
+| Exhaust fan | 2 | Speed 0–100%; 0 turns it off |
+| Circulation fan | 3 | Gears 0–10; 0 turns it off |
+| Water pump | 4 | Finite pulses; default maximum 5 seconds, with a 60-second cooldown |
 
-调光和调速不会自动开启对应电源插座。先按接线开启电源，再调节设备。5 号不默认分配用途；没有对应配置的插座拒绝写入。
+Dimming and speed commands do not automatically switch on the corresponding power outlet. Turn on the correctly wired outlet before adjusting a device. Outlet 5 has no default assignment; writes to outlets absent from the live configuration are rejected.
 
-## 接入 Codex / MCP 客户端
+## Connect Codex or another MCP client
 
-保持常驻服务运行。在 MCP 客户端里添加一个 stdio 服务：
+Keep the daemon running. Add a stdio server to your MCP client. For Codex, use:
 
 ```toml
 [mcp_servers.growbridge]
@@ -73,42 +73,42 @@ command = "/absolute/path/spiderfarmer-growbridge/.venv/bin/growbridge"
 args = ["mcp"]
 ```
 
-上面的 `/absolute/path` 是占位符，替换为你的实际安装路径。支持的工具：
+Replace `/absolute/path` with your actual installation path. Available tools:
 
-| 工具 | 用途 |
+| Tool | Purpose |
 | --- | --- |
-| `get_health` | 蓝牙、数据新鲜度、协议、插座映射 |
-| `get_status` | 环境、插座和设备状态 |
-| `get_history` | 最近最多 168 小时的已有记录；默认返回最近 500 个样本 |
-| `set_light` | 调整灯亮度 |
-| `set_exhaust` | 调整排风扇速度 |
-| `set_fan` | 调整风扇档位 |
-| `set_outlet` | 开关电源插座；水泵插座直接开启被阻止 |
-| `run_pump` | 有限时长运行水泵，并在返回前回读确认关闭 |
+| `get_health` | Bluetooth availability, data freshness, protocol, and outlet mapping |
+| `get_status` | Environmental readings, outlet states, and device states |
+| `get_history` | Existing observations from up to the last 168 hours; returns the latest 500 samples by default |
+| `set_light` | Adjust grow light brightness |
+| `set_exhaust` | Adjust exhaust fan speed |
+| `set_fan` | Adjust circulation fan gear |
+| `set_outlet` | Switch a power outlet; direct pump outlet activation is blocked |
+| `run_pump` | Run a finite pump pulse and confirm OFF through device readback before returning |
 
-所有控制工具都要求 `request_id`（8–100 个字母、数字、下划线或连字符）。每个新动作使用新 ID；重试同一个动作复用 ID，避免重复执行。不同参数不能复用同一个 ID。失败操作需先查看状态，再决定是否创建新动作。
+Every control tool requires a `request_id`: 8–100 letters, digits, underscores, or hyphens. Use a new ID for each intended action and reuse that ID when retrying the same action to prevent duplicate execution. An ID cannot be reused with different arguments. After an operation fails, inspect the current state before deciding whether to submit a new action.
 
-适合的请求示例：“查看当前环境并说明数据多久前更新”“将灯调到 25% 并确认回读”“用同一个请求 ID 重试刚才的查询结果不明的动作”。
+Example requests: “Check the current environment and tell me how old the readings are,” “Set the light to 25% and confirm the readback,” or “Retry the previous action with the same request ID; its outcome is unclear.”
 
-## Mac 后台运行
+## Run in the background on macOS
 
-在项目目录执行：
+From the project directory, run:
 
 ```sh
 .venv/bin/python scripts/install_macos.py
 ```
 
-安装器写入当前用户的 LaunchAgent 并启动服务，不修改设备设置。登录后自动启动；退出登录或电脑休眠时，Mac 无法承担持续采集。长期运行建议迁移到树莓派。日志位于私有数据目录。
+The installer creates a LaunchAgent for the current user and starts the service without changing device settings. It starts automatically at login. Data collection cannot continue while the Mac is asleep or the user is logged out. A Raspberry Pi is the intended deployment target for continuous operation. Logs are stored in the private data directory.
 
-停止并移除自动启动项：
+To stop the service and remove automatic startup:
 
 ```sh
 .venv/bin/python scripts/install_macos.py --uninstall
 ```
 
-## 树莓派部署
+## Deploy on Raspberry Pi
 
-在 Raspberry Pi OS Lite 64 位上启用 SSH、连接网络，然后执行：
+Enable SSH and connect to the network on Raspberry Pi OS Lite 64-bit, then run:
 
 ```sh
 sudo apt update
@@ -122,18 +122,18 @@ python3 -m venv .venv
 .venv/bin/growbridge serve
 ```
 
-先完成读取测试，再显式启用控制。Mac 的设备 UUID 不用于 Linux；树莓派上重新扫描并保存自己的地址。
+Verify read access before explicitly enabling control. A macOS device UUID cannot be used on Linux; scan again on the Raspberry Pi and save the address returned there.
 
-后台启动：
+To install the background service:
 
 ```sh
 .venv/bin/python scripts/install_linux.py
 systemctl --user status growbridge
 ```
 
-如果要求退出 SSH 后持续运行并开机启动用户服务，还需由管理员对目标账户开启 linger：`sudo loginctl enable-linger "$USER"`。发行版的 BlueZ/D-Bus 权限策略可能需要为该账户授权，请按实际系统配置；程序不要求以 root 身份运行。
+To keep the user service running after SSH logout and start it at boot, an administrator must also enable linger for the target account: `sudo loginctl enable-linger "$USER"`. BlueZ/D-Bus permissions depend on the distribution and may require authorization for that account. The application does not require running as root.
 
-从 Mac 通过 SSH 使用树莓派的 MCP：
+To use the Raspberry Pi's MCP server from a Mac over SSH:
 
 ```toml
 [mcp_servers.growbridge]
@@ -141,19 +141,19 @@ command = "ssh"
 args = ["-T", "YOUR_PI_HOST", "/absolute/path/on/pi/spiderfarmer-growbridge/.venv/bin/growbridge", "mcp"]
 ```
 
-先配置 SSH 密钥并确认主机身份。MCP 连接结束不会停止树莓派的常驻服务。服务继续只监听树莓派自己的回环地址，不需要公开 HTTP 端口。
+Configure SSH keys and verify the host's identity first. Closing an MCP connection leaves the Raspberry Pi daemon running. The API continues to listen only on the Pi's loopback address; no public HTTP port is needed.
 
-## 数据与控制边界
+## Data and control boundaries
 
-- 默认保留 30 天传感器样本，可配置 `retention_days`；历史从安装启动后开始。
-- 配置、SQLite 和日志存放在用户私有目录。仓库不包含实际地址、账户标识、抓包或设备配置备份。
-- 先读取目标模块完整配置，再修改目标字段；收到成功回复后仍须读取设备状态确认。
-- 数据过期、蓝牙断线、协议不支持时拒绝普通控制；重连不会重放历史命令。
-- 水泵计时由服务负责，客户端断开不会取消关闭动作。进行中的操作先写入数据库；中断后的水泵操作在重连时优先关闭，不重放开启动作。
-- 如果关闭水泵无法确认，服务标记异常、阻止进一步普通控制，并尝试恢复连接后关闭。主机断电、进程被强制终止、蓝牙完全失效时，软件计时无法保证设备按时关闭；无人值守灌溉需要设备端计时或独立硬件保护。
-- 本版本只验证了指定设备及协议；不要把某一台设备的成功当作所有固件和硬件的兼容保证。
+- Sensor samples are retained for 30 days by default, configurable through `retention_days`. History starts when the installed service begins collecting data.
+- Configuration, SQLite data, and logs are stored in private user directories. The repository contains no actual device addresses, account identifiers, captures, or device configuration backups.
+- The service reads the target module's complete configuration before changing its fields. A successful acknowledgement is followed by a device-state readback to confirm the change.
+- Ordinary controls are rejected when data is stale, Bluetooth is disconnected, or the protocol is unsupported. Reconnection does not replay historical commands.
+- The daemon owns pump timing. A client disconnect does not cancel the OFF action. Operations are persisted before execution; after an interrupted pump operation, reconnection prioritizes turning the pump off rather than replaying ON.
+- If pump shutdown cannot be confirmed, the service reports the fault, blocks further ordinary controls, and attempts to turn it off after restoring the connection. Software timing cannot guarantee shutdown during host power loss, forced process termination, or complete Bluetooth failure. Unattended irrigation needs device-side timing or independent hardware protection.
+- Validation covers the specified device and protocol. Compatibility with other hardware and firmware remains unverified.
 
-## 开发验证
+## Development and validation
 
 ```sh
 .venv/bin/python -m pip install -c constraints-tested.txt -e '.[dev]'
@@ -163,15 +163,15 @@ args = ["-T", "YOUR_PI_HOST", "/absolute/path/on/pi/spiderfarmer-growbridge/.ven
 .venv/bin/python -m build
 ```
 
-详细实测范围见 [VALIDATION.md](VALIDATION.md)。
+See [VALIDATION.md](VALIDATION.md) for the detailed validation scope.
 
-自动测试使用合成设备，不连接蓝牙、不操作实物。测试覆盖分片与 CRC、版本拒绝、写入回读、参数限制、身份验证、重复请求、水泵超时及恢复。
+Automated tests use synthetic devices, with no Bluetooth connection or physical hardware operation. They cover fragmentation and CRCs, unsupported protocol rejection, control readback, parameter bounds, authentication, duplicate requests, pump timeouts, and recovery.
 
-参考：
+References:
 
-- [OpenAI MCP 工具开发文档](https://developers.openai.com/plugins/build/mcp-server)
-- [Bleak Linux 后端](https://bleak.readthedocs.io/en/latest/backends/linux.html)
-- [原始 Wi-Fi/MQTT 桥接项目](https://github.com/iceboerg00/spiderfarmer-bridge)
-- [GGS BLE 协议研究](https://github.com/cr0ssn0tice/Spider-Farmer-GGS-Controller-MQTT)
+- [OpenAI MCP server development documentation](https://developers.openai.com/plugins/build/mcp-server)
+- [Bleak Linux backend](https://bleak.readthedocs.io/en/latest/backends/linux.html)
+- [Original Wi-Fi/MQTT bridge project](https://github.com/iceboerg00/spiderfarmer-bridge)
+- [GGS BLE protocol research](https://github.com/cr0ssn0tice/Spider-Farmer-GGS-Controller-MQTT)
 
-本项目的驱动和解码器独立实现，协议细节还通过本地设备数据进行了验证。MIT License。
+The driver and decoder are independently implemented. Protocol details have also been verified against local device data. MIT License.
