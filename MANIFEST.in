@@ -3,3 +3,4 @@ recursive-include scripts *.py
 recursive-include tests *.py
 recursive-include src/growbridge/native *.swift
 recursive-include src/growbridge/web *.html *.css *.js
+recursive-include docs/images *.png

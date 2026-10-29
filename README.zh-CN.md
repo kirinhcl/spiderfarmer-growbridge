@@ -6,6 +6,27 @@
 
 这是独立开发的早期版本，与 Spider Farmer 官方无关联。当前已经在 **macOS + AC5（广播名称 SF-GGS-PS5、固件 3.2、明文协议 v1）** 上验证协议读取、插座开关、调光和调速。Linux/树莓派后端和部署入口已提供；树莓派蓝牙实机验证尚未完成。加密 v2 固件会被识别并拒绝控制。
 
+## 界面预览
+
+以下截图使用演示数据，没有连接真实硬件。
+
+**桌面总览**：环境读数、历史曲线、设备控制和最近操作。
+
+![GrowBridge 桌面控制台：演示环境读数和历史曲线](docs/images/dashboard-overview.png)
+
+<details>
+<summary>展开查看设备控制与手机布局</summary>
+
+**设备控制**：灯光亮度、风机速度、水泵定时运行和电源插座。
+
+![GrowBridge 设备控制与电源插座，使用演示数据](docs/images/dashboard-controls.png)
+
+**手机布局**：窄屏上的相同控制功能。
+
+<img src="docs/images/dashboard-mobile.png" alt="GrowBridge 手机设备控制界面，使用演示数据" width="375">
+
+</details>
+
 ## 工作方式
 
 ```text

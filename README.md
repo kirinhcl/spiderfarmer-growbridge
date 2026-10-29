@@ -6,6 +6,27 @@ Connect to Spider Farmer GGS controllers over local Bluetooth and give LLMs tool
 
 This is an independent, early-stage project with no affiliation with Spider Farmer. Protocol reads, outlet switching, dimming, and speed control have been verified on **macOS with an AC5 advertising as SF-GGS-PS5, firmware 3.2, using plaintext protocol v1**. A Linux/Raspberry Pi backend and installation scripts are included; Bluetooth operation on a physical Raspberry Pi has not yet been verified. Encrypted v2 firmware is detected and control is rejected.
 
+## Preview
+
+Screenshots use simulated data, with no hardware connected.
+
+**Desktop overview** — environment readings, historical trends, controls, and recent actions.
+
+![GrowBridge desktop dashboard with simulated environmental readings and history](docs/images/dashboard-overview.png)
+
+<details>
+<summary>Device controls and mobile layout</summary>
+
+**Device controls** — light brightness, fan speeds, timed pump operation, and power outlets.
+
+![GrowBridge device controls and power outlets using simulated data](docs/images/dashboard-controls.png)
+
+**Mobile layout** — the same controls on a narrow screen.
+
+<img src="docs/images/dashboard-mobile.png" alt="GrowBridge mobile device controls with simulated data" width="375">
+
+</details>
+
 ## How it works
 
 ```text
