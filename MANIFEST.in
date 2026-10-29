@@ -1,4 +1,4 @@
-include LICENSE README.md constraints-tested.txt
+include LICENSE README.md README.en.md constraints-tested.txt
 recursive-include scripts *.py
 recursive-include tests *.py
 recursive-include src/growbridge/native *.swift

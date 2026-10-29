@@ -1,5 +1,7 @@
 # Spider Farmer GrowBridge
 
+简体中文 | [English](README.en.md)
+
 通过本地蓝牙连接 Spider Farmer GGS 控制器，为 LLM 提供环境监测、历史查询、插座、灯和风机控制，以及定时水泵工具。
 
 这是独立开发的早期版本，与 Spider Farmer 官方无关联。当前已经在 **macOS + AC5（广播名称 SF-GGS-PS5、固件 3.2、明文协议 v1）** 上验证协议读取、插座开关、调光和调速。Linux/树莓派后端和部署入口已提供；树莓派蓝牙实机验证尚未完成。加密 v2 固件会被识别并拒绝控制。
