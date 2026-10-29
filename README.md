@@ -23,7 +23,7 @@ Spider Farmer AC5 / GGS
 
 The daemon owns the Bluetooth connection, executes commands, verifies device readback, and records history. MCP clients access it through the local API, which listens only on `127.0.0.1:8766` by default. Each installation generates a separate access token. Clients read the token from private configuration, so it stays out of MCP configuration files.
 
-The first release supports on-demand control and continuous data collection. Unattended environmental optimization, irrigation schedules, MQTT, cloud models, and a web dashboard are outside its current scope.
+This release supports on-demand control, continuous data collection, and a local web dashboard. Unattended environmental optimization, irrigation schedules, MQTT, and cloud models are outside its current scope.
 
 ## Installation
 
@@ -62,6 +62,34 @@ The default outlet mapping is shown below. Update the configuration first if you
 | Water pump | 4 | Finite pulses; default maximum 5 seconds, with a 60-second cooldown |
 
 Dimming and speed commands do not automatically switch on the corresponding power outlet. Turn on the correctly wired outlet before adjusting a device. Outlet 5 has no default assignment; writes to outlets absent from the live configuration are rejected.
+
+## Local dashboard
+
+With the daemon running, open the dashboard from the same installation:
+
+```sh
+.venv/bin/growbridge dashboard
+```
+
+The browser shows live temperature, humidity, VPD, CO₂, PPFD and soil temperature; device readbacks; light and fan controls; power outlets; and finite pump pulses. Historical charts cover 1 hour, 6 hours, 24 hours or 7 days. Choose a measurement, inspect individual recorded points, or export all raw samples in the chosen period as CSV. Recent actions include both dashboard and MCP requests. The responsive interface defaults to English and supports Simplified Chinese.
+
+Opening the dashboard uses a single-use link that expires after 60 seconds. The browser receives an HttpOnly session cookie valid for 12 hours; the installation's API token is never sent to browser JavaScript. Use `Disconnect dashboard` to revoke that session. After the daemon restarts or the browser session expires, run the command again. Manual controls use the same validation and readback checks as MCP. Stale data or a read-only installation disables controls.
+
+Charts select actual snapshots across the full requested window when there are many samples. They show gaps in collection and do not invent missing readings. CSV exports include every recorded sample in the window, with UTC timestamps; charts use the browser's local timezone. A missing reading is shown as a dash, while a reported zero remains zero.
+
+The dashboard runs entirely from local assets and requires no frontend build or CDN. The service still listens only on loopback. On a Raspberry Pi, forward the port over SSH before opening it on your Mac:
+
+```sh
+ssh -L 8766:127.0.0.1:8766 YOUR_PI_HOST
+```
+
+In another terminal, request a short-lived connection link from the Pi:
+
+```sh
+ssh -T YOUR_PI_HOST /absolute/path/on/pi/spiderfarmer-growbridge/.venv/bin/growbridge dashboard --no-open
+```
+
+Open the returned link on the Mac within 60 seconds. Keep the SSH forwarding session running. This does not make the control interface public.
 
 ## Connect Codex or another MCP client
 

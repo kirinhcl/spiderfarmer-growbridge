@@ -26,6 +26,14 @@ def main():
     sub.add_parser("serve", help="Run the single-owner BLE service and loopback HTTP API")
     sub.add_parser("mcp", help="Run MCP over stdio; connects to the already-running daemon")
     sub.add_parser("status", help="Read current daemon state")
+    dashboard = sub.add_parser(
+        "dashboard", help="Open the local dashboard with a one-use connection link"
+    )
+    dashboard.add_argument(
+        "--no-open",
+        action="store_true",
+        help="Print the short-lived link instead of opening a browser",
+    )
     args = parser.parse_args()
     os.umask(0o077)
     if args.command == "init":
@@ -40,7 +48,19 @@ def main():
         print(json.dumps(asyncio.run(scan_devices(data_dir)), ensure_ascii=False, indent=2))
         return
     settings = load(args.config)
-    if args.command == "mcp":
+    if args.command == "dashboard":
+        import webbrowser
+
+        from .client import Client
+
+        result = asyncio.run(Client(settings).call("POST", "/ui/session"))
+        url = settings.url + "/#session=" + result["code"]
+        if args.no_open:
+            print(url)
+        else:
+            webbrowser.open(url)
+            print("Dashboard opened. Connection link expires in 60 seconds.")
+    elif args.command == "mcp":
         from .mcp_server import create_mcp
 
         create_mcp(settings).run(transport="stdio")

@@ -2,3 +2,4 @@ include LICENSE README.md README.zh-CN.md README.en.md constraints-tested.txt
 recursive-include scripts *.py
 recursive-include tests *.py
 recursive-include src/growbridge/native *.swift
+recursive-include src/growbridge/web *.html *.css *.js

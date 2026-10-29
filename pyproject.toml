@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spiderfarmer-growbridge"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local Spider Farmer GGS BLE control, telemetry history, and MCP tools"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,7 +21,7 @@ growbridge = "growbridge.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-growbridge = ["native/*.swift"]
+growbridge = ["native/*.swift", "web/*.html", "web/*.css", "web/*.js"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
