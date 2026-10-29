@@ -12,18 +12,18 @@ Screenshots use simulated data, with no hardware connected.
 
 **Desktop overview** — environment readings, historical trends, controls, and recent actions.
 
-![GrowBridge desktop dashboard with simulated environmental readings and history](docs/images/dashboard-overview.png)
+![GrowBridge desktop dashboard with simulated environmental readings and history](docs/images/dashboard-overview.jpg)
 
 <details>
 <summary>Device controls and mobile layout</summary>
 
 **Device controls** — light brightness, fan speeds, timed pump operation, and power outlets.
 
-![GrowBridge device controls and power outlets using simulated data](docs/images/dashboard-controls.png)
+![GrowBridge device controls and power outlets using simulated data](docs/images/dashboard-controls.jpg)
 
 **Mobile layout** — the same controls on a narrow screen.
 
-<img src="docs/images/dashboard-mobile.png" alt="GrowBridge mobile device controls with simulated data" width="375">
+<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge mobile device controls with simulated data" width="375">
 
 </details>
 

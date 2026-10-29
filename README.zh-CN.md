@@ -12,18 +12,18 @@
 
 **桌面总览**：环境读数、历史曲线、设备控制和最近操作。
 
-![GrowBridge 桌面控制台：演示环境读数和历史曲线](docs/images/dashboard-overview.png)
+![GrowBridge 桌面控制台：演示环境读数和历史曲线](docs/images/dashboard-overview.jpg)
 
 <details>
 <summary>展开查看设备控制与手机布局</summary>
 
 **设备控制**：灯光亮度、风机速度、水泵定时运行和电源插座。
 
-![GrowBridge 设备控制与电源插座，使用演示数据](docs/images/dashboard-controls.png)
+![GrowBridge 设备控制与电源插座，使用演示数据](docs/images/dashboard-controls.jpg)
 
 **手机布局**：窄屏上的相同控制功能。
 
-<img src="docs/images/dashboard-mobile.png" alt="GrowBridge 手机设备控制界面，使用演示数据" width="375">
+<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge 手机设备控制界面，使用演示数据" width="375">
 
 </details>
 
