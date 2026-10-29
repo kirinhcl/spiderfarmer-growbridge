@@ -8,22 +8,22 @@ This is an independent, early-stage project with no affiliation with Spider Farm
 
 ## Preview
 
-Screenshots use simulated data, with no hardware connected.
+Screenshots captured from a real AC5 connected over local Bluetooth on macOS. Readings, history, and device states reflect the time of capture.
 
 **Desktop overview** — environment readings, historical trends, controls, and recent actions.
 
-![GrowBridge desktop dashboard with simulated environmental readings and history](docs/images/dashboard-overview.jpg)
+![GrowBridge desktop dashboard with real AC5 environmental readings and recorded history](docs/images/dashboard-overview.jpg)
 
 <details>
 <summary>Device controls and mobile layout</summary>
 
 **Device controls** — light brightness, fan speeds, timed pump operation, and power outlets.
 
-![GrowBridge device controls and power outlets using simulated data](docs/images/dashboard-controls.jpg)
+![GrowBridge device controls and power outlets showing real AC5 device states](docs/images/dashboard-controls.jpg)
 
 **Mobile layout** — the same controls on a narrow screen.
 
-<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge mobile device controls with simulated data" width="375">
+<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge mobile device controls showing real AC5 device states" width="375">
 
 </details>
 
@@ -195,7 +195,7 @@ Configure SSH keys and verify the host's identity first. Closing an MCP connecti
 ## Data and control boundaries
 
 - Sensor samples are retained for 30 days by default, configurable through `retention_days`. History starts when the installed service begins collecting data.
-- Configuration, SQLite data, and logs are stored in private user directories. The repository contains no actual device addresses, account identifiers, captures, or device configuration backups.
+- Configuration, SQLite data, and logs are stored in private user directories. The repository contains no actual device addresses, account identifiers, raw protocol captures, or device configuration backups.
 - The service reads the target module's complete configuration before changing its fields. A successful acknowledgement is followed by a device-state readback to confirm the change.
 - Ordinary controls are rejected when data is stale, Bluetooth is disconnected, or the protocol is unsupported. Reconnection does not replay historical commands.
 - The daemon owns pump timing. A client disconnect does not cancel the OFF action. Operations are persisted before execution; after an interrupted pump operation, reconnection prioritizes turning the pump off rather than replaying ON.

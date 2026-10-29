@@ -8,22 +8,22 @@
 
 ## 界面预览
 
-以下截图使用演示数据，没有连接真实硬件。
+以下截图来自通过本地蓝牙连接到 Mac 的真实 AC5，展示截图时的环境读数、采集历史和设备状态。
 
 **桌面总览**：环境读数、历史曲线、设备控制和最近操作。
 
-![GrowBridge 桌面控制台：演示环境读数和历史曲线](docs/images/dashboard-overview.jpg)
+![GrowBridge 桌面控制台：真实 AC5 环境读数和采集历史曲线](docs/images/dashboard-overview.jpg)
 
 <details>
 <summary>展开查看设备控制与手机布局</summary>
 
 **设备控制**：灯光亮度、风机速度、水泵定时运行和电源插座。
 
-![GrowBridge 设备控制与电源插座，使用演示数据](docs/images/dashboard-controls.jpg)
+![GrowBridge 设备控制与电源插座，展示真实 AC5 设备状态](docs/images/dashboard-controls.jpg)
 
 **手机布局**：窄屏上的相同控制功能。
 
-<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge 手机设备控制界面，使用演示数据" width="375">
+<img src="docs/images/dashboard-mobile.jpg" alt="GrowBridge 手机设备控制界面，展示真实 AC5 设备状态" width="375">
 
 </details>
 
@@ -195,7 +195,7 @@ args = ["-T", "YOUR_PI_HOST", "/absolute/path/on/pi/spiderfarmer-growbridge/.ven
 ## 数据与控制边界
 
 - 默认保留 30 天传感器样本，可配置 `retention_days`；历史从安装启动后开始。
-- 配置、SQLite 和日志存放在用户私有目录。仓库不包含实际地址、账户标识、抓包或设备配置备份。
+- 配置、SQLite 和日志存放在用户私有目录。仓库不包含实际地址、账户标识、原始蓝牙抓包或设备配置备份。
 - 先读取目标模块完整配置，再修改目标字段；收到成功回复后仍须读取设备状态确认。
 - 数据过期、蓝牙断线、协议不支持时拒绝普通控制；重连不会重放历史命令。
 - 水泵计时由服务负责，客户端断开不会取消关闭动作。进行中的操作先写入数据库；中断后的水泵操作在重连时优先关闭，不重放开启动作。
